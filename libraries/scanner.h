@@ -15,15 +15,15 @@ class scanner{
         bool compare(string texta, string textb);
         string upperString(string texto);
         void start();
-        // void functions(string comando, vector<string> instruciones); //Recibe el comando y lista de instrucciones
-        // string token(string texto);
-        // vector<string> split(string texto, string separador);
-        // vector<string> split_tokens(string texto);
-        // void errores(string operacion, string mensaje);
-        // void respuesta(string operacion, string mensaje);
-        // void funcion_excec(vector<string> tokens);
-        // void exec(string path);
-        // bool confirm(string mensaje);
+        string token(string texto);
+        void functions(string comando, vector<string> instruciones); //Recibe el comando y lista de instrucciones
+        vector<string> split(string texto, string separador);
+        vector<string> split_tokens(string texto);
+        void errores(string operacion, string mensaje);
+        void respuesta(string operacion, string mensaje);
+        void funcion_excec(vector<string> tokens);
+        void exec(string path);
+        bool confirm(string mensaje);
 };
 
 
