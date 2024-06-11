@@ -21,7 +21,7 @@ class scanner{
         vector<string> split_tokens(string texto);
         void errores(string operacion, string mensaje);
         void respuesta(string operacion, string mensaje);
-        void funcion_excec(vector<string> tokens);
+        void funcion_exec(vector<string> tokens);
         void exec(string path);
         bool confirm(string mensaje);
 };

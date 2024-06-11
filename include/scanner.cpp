@@ -36,15 +36,15 @@ void scanner::start()
         if (upperString(texto) == "EXIT"){
             break;
         }
-        string tk = token(texto); // mkdisk
-        texto.erase(0,tk.length()+1);
+        string comand = token(texto); // mkdisk
+        texto.erase(0,comand.length()+1);
         vector<string> tks = split_tokens(texto); //[-s=10, -u=m, -path=/home/hola.dk]
-        cout << "Comand: " << tk << endl;
+        cout << "Comand: " << comand << endl;
         cout << "Parameters: ";
         for(string &a: tks){
             cout << a << " ";
         }
-        functions(tk, tks);
+        functions(comand, tks);
         //cout << "\nPresione Enter para continuar...." << endl;
         //getline(cin,texto);
         ClearScreen();  
@@ -54,28 +54,28 @@ void scanner::start()
 
 
 string scanner::token(string texto){
-    string tk="";
+    string comand="";
     for(char &caracter: texto){
         if(caracter == ' '){
-            return tk;
+            return comand;
         }
-        tk+=caracter;
+        comand+=caracter;
     }
-    return tk;
+    return comand;
 }
 
 vector<string> scanner::split(string texto, string separador){
     vector<string> tokens;
-    string tk="";
+    string comand="";
     for(char &caracter: texto){
         if(caracter == separador[0]){
-            tokens.push_back(tk);
-            tk="";
+            tokens.push_back(comand);
+            comand="";
         }else{
-            tk+=caracter;
+            comand+=caracter;
         }
     }
-    tokens.push_back(tk);
+    tokens.push_back(comand);
     return tokens;
 }
 
@@ -156,7 +156,7 @@ void scanner::respuesta(string operacion, string mensaje){
 
 
 void scanner::functions(string comand, vector<string> parameters){
-    if (compare(comand, "MKDISK")){     //mkdisk -s=5 -u=M -path/home/hola.dsk
+    if (compare(comand, "MKDISK")){     //mkdisk -s=5 -u=M -path=/home/hola.dsk
         cout << " \n Creando disco..." << endl;
         disco.mkdisk(parameters);
 
@@ -168,12 +168,17 @@ void scanner::functions(string comand, vector<string> parameters){
         cout << "Montando particion..." << endl;
     }else if(compare(comand, "UNMOUNT")){
         cout << "Desmontando particion..." << endl;
+
     }else if(compare(comand, "REP")){
         cout << "Generando reporte..." << endl;
     }else if(compare(comand, "EXEC")){
         cout << "Ejecutando script..." << endl;
+        funcion_exec(parameters);
+
     }else if(compare(comand, "PAUSE")){
-        cout << "Pausando programa..." << endl;
+        cout << "Presione enter para reanudar el programa..." << endl;
+        getline(cin,comand);
+
     }else if(compare(comand, "MKFS")){
         cout << "Formateando particion..." << endl;
     }else if(compare(comand, "LOGIN")){
@@ -206,4 +211,48 @@ void scanner::functions(string comand, vector<string> parameters){
     else{
         cout << "Comando no reconocido..." << endl;
     }
+}
+
+void scanner::funcion_exec(vector<string> tokens){
+    string path = "";
+    for (string token:tokens)
+    {
+        string comand = token.substr(0, token.find("="));
+        token.erase(0,comand.length()+1);
+        if (compare(comand, "path"))
+        {
+            path = token;
+        }
+    }
+    if (path.empty())
+    {
+        errores("EXEC","Se requiere path para este comando");
+        return;
+    }
+    exec(path);
+}
+
+void scanner::exec(string path){
+    string filename(path);
+    vector <string> lines;
+    string line;
+    ifstream input_file(filename);
+    if(!input_file.is_open()){
+        cerr << "No se puede abrir el archivo: " << filename << endl;
+        return;
+    }
+    while(getline(input_file,line)){
+        lines.push_back(line);
+    }
+    for(const auto &instruc:lines){
+        string texto = instruc;
+        string comand = token(texto);
+        if(texto!=""){
+            texto.erase(0,comand.length()+1);
+            vector <string> parameters = split_tokens(texto);
+            functions(comand,parameters);
+        }
+    }
+    input_file.close();
+    return;
 }
