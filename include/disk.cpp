@@ -229,31 +229,110 @@ void Disk::rmdisk(vector<string> context){
     }
 }
 
+
 void Disk::fdisk(vector<string> context){
+    
     bool deletePartition = false;
-    bool addPartition = false;
-    for (string current:context)
-    {
+    //fdisk -s=300 -path=/home/Disco1.dsk -name=Particion1
+    //fdisk -delete=fast -path=/home/Disco1.dsk -name=Particion1
+    // [s=300, path=/home/Disco1.dsk, name=Particion1]
+    // [delete=fast, path=/home/Disco1.dsk, name=Particion1]
+    for (string current: context){
         string id = current.substr(0, current.find("="));
-        current.erase(0, id.length()+1);
-        if(current.substr(0,1) == "\""){
-            current = current.substr(1,current.length()-2);
-        }   
+        current.erase(0, id.length() + 1);
+        if(current.substr(0, 1) == "\""){
+            current = current.substr(1, current.length() - 2);
+        }
         if(scan.compare(id, "delete")){
             deletePartition = true;
-    
         }else if(scan.compare(id, "add")){
-            addPartition = true;
-        }   
+            deletePartition = false;
+        }
+    }
+
+    if(deletePartition){        
+        fdisk_delete(context);
+    }else{
+        fdisk_create(context);
     }
 }
 
+
 void Disk::fdisk_create(vector<string> context){
-    string size = "";  
+    vector<string> required = {"s", "path", "name"};
+    string size;
     string unit = "k";
     string path;
     string type = "P";
-    string fit = "FF";
+    string fit = "WF";
     string name;
     string add;
+
+    for(auto current: context){
+        string id = current.substr(0, current.find("="));
+        current.erase(0, id.length() + 1);
+        if(current.substr(0, 1) == "\""){
+            current = current.substr(1, current.length() - 2);
+        }
+
+        if (scan.compare(id, "s"))
+        {
+            if(count(required.begin(), required.end(), id)){
+                auto itr = find(required.begin(), required.end(), id);
+                required.erase(itr);
+                size = current;
+            }
+        }else if (scan.compare(id, "u")){
+            unit = current;
+        }else if(scan.compare(id, "path")){
+            if(count(required.begin(), required.end(), id)){
+                auto itr = find(required.begin(), required.end(), id);
+                required.erase(itr);
+                path = current;
+            }
+        }else if (scan.compare(id, "type")){
+            type = current;
+        }else if (scan.compare(id, "f")){
+            fit = current;
+        }else if (scan.compare(id, "name")){
+            if(count(required.begin(), required.end(), id)){
+                auto itr = find(required.begin(), required.end(), id);
+                required.erase(itr);
+                name = current;
+            }
+        }else if (scan.compare(id, "add")){
+            add = current;
+            if (count(required.begin(), required.end(), "s")) {
+                auto itr = find(required.begin(), required.end(), "s");
+                required.erase(itr);
+                size = current;
+            }
+
+        }else{
+            scan.errores("FDISK","No se reconoce el parametro "+id);
+        }
+    }
+
+    if(!required.empty()){
+        scan.errores("FDISK","Faltan parametros obligatorios para completar la acción");
+        return;
+    }else{
+        
+        cout << "Generar particion" << endl;
+        cout << "Size: " << size << endl;
+        cout << "U: " << unit << endl;
+        cout << "Path: " << path << endl;
+        cout << "Type: " << type << endl;
+        cout << "F: " << fit << endl;
+        cout << "Name: " << name << endl;
+        cout << "Add: " << add << endl;
+    }
+}
+
+void Disk::fdisk_delete(vector<string> context){
+
+}
+
+void Disk::generatepartition(string s, string u, string p, string t, string f, string n, string a){
+
 }

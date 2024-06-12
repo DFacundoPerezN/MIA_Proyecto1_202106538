@@ -14,6 +14,8 @@ class scanner{
         scanner();
         bool compare(string texta, string textb);
         string upperString(string texto);
+        string lowerString(string texto);
+        void handler(string title, string mensaje);
         void start();
         string token(string texto);
         void functions(string comando, vector<string> instruciones); //Recibe el comando y lista de instrucciones

@@ -142,6 +142,21 @@ string scanner::upperString(string a){
     return up;  
 }
 
+string scanner:: lowerString(string a){
+    string up="";
+    for(char &a: a){
+        up+=tolower(a);
+    }
+    return up;  
+}
+
+void scanner::handler(string title, string message)
+{
+    cout << "\033[1;31m Error: \033"
+        << "\033[0;31m(" + title + ")~> \033[0m"
+        << message << endl;
+}
+
 bool scanner::compare(string a, string b){
     return upperString(a) == upperString(b);
 }
@@ -160,19 +175,21 @@ void scanner::functions(string comand, vector<string> parameters){
         cout << " \n Creando disco..." << endl;
         disco.mkdisk(parameters);
 
-    }else if(compare(comand, "RMDISK")){
-        cout << "Eliminando disco..." << endl;
+    }else if(compare(comand, "RMDISK")){    //rmdisk -path=/home/hola.dsk
+        cout << "\n Eliminando disco..." << endl;
+
+        disco.rmdisk(parameters);
     }else if(compare(comand, "FDISK")){
-        cout << "Creando particion..." << endl;
+        cout << "\n Creando particion..." << endl;
     }else if(compare(comand, "MOUNT")){
-        cout << "Montando particion..." << endl;
+        cout << "\n Montando particion..." << endl;
     }else if(compare(comand, "UNMOUNT")){
-        cout << "Desmontando particion..." << endl;
+        cout << "\n Desmontando particion..." << endl;
 
     }else if(compare(comand, "REP")){
-        cout << "Generando reporte..." << endl;
+        cout << "\n Generando reporte..." << endl;
     }else if(compare(comand, "EXEC")){
-        cout << "Ejecutando script..." << endl;
+        cout << "\n Ejecutando script..." << endl;
         funcion_exec(parameters);
 
     }else if(compare(comand, "PAUSE")){
