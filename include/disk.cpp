@@ -50,6 +50,9 @@ void Disk::mkdisk(vector<string> tokens){
         {
             if (path.empty())
             {
+                if(token.substr(0,1) == "\""){
+                    token = token.substr(1,token.length()-2);
+                }
                 path = token;
             }else{
                 scan.errores("MKDISK","parametro PATH repetido en el comando"+tk);
@@ -185,4 +188,72 @@ void Disk::makeDisk(string s, string f, string u, string path){\
         scan.errores("MKDISK","Size debe ser un entero");
     }
 
+}
+
+void Disk::rmdisk(vector<string> context){
+    string path = "";
+    bool error = false;
+    for(string token:context){
+        string tk = token.substr(0, token.find("="));
+        token.erase(0,tk.length()+1);
+        if(scan.compare(tk, "path")){
+            if(path.empty()){
+                if(token.substr(0,1) == "\""){
+                    token = token.substr(1,token.length()-2);
+                }
+                path = token;
+            }else{
+                scan.errores("RMDISK","El parametro PATH ya fue ingresado en el comando"+tk);
+            }
+        }else{
+            scan.errores("RMDISK","no se esperaba el parametro "+tk);
+            error = true;
+            break;
+        }
+    }
+    if (error){
+        return;
+    }
+    if (path.empty()){
+        scan.errores("RMDISK","se requiere parametro PATH para este comando");
+    }else{
+        FILE *file = fopen(path.c_str(), "r");
+        if(file == NULL){
+            scan.errores("RMDISK","El disco no existe");
+            return;
+        }
+        fclose(file);
+        string comando = "rm \"" + path + "\"";
+        system(comando.c_str());
+        scan.respuesta("RMDISK","Disco eliminado exitosamente");
+    }
+}
+
+void Disk::fdisk(vector<string> context){
+    bool deletePartition = false;
+    bool addPartition = false;
+    for (string current:context)
+    {
+        string id = current.substr(0, current.find("="));
+        current.erase(0, id.length()+1);
+        if(current.substr(0,1) == "\""){
+            current = current.substr(1,current.length()-2);
+        }   
+        if(scan.compare(id, "delete")){
+            deletePartition = true;
+    
+        }else if(scan.compare(id, "add")){
+            addPartition = true;
+        }   
+    }
+}
+
+void Disk::fdisk_create(vector<string> context){
+    string size = "";  
+    string unit = "k";
+    string path;
+    string type = "P";
+    string fit = "FF";
+    string name;
+    string add;
 }
