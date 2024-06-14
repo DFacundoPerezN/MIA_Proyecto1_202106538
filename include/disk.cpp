@@ -5,7 +5,8 @@
 #include <vector>
 #include <iostream>
 #include <stdlib.h>
-#include <string>
+#include <stdio.h>
+#include <string.h>
 #include <algorithm>
 
 using namespace std;
@@ -18,16 +19,16 @@ Disk::Disk(){
 
 void Disk::mkdisk(vector<string> tokens){
     string size = "";
-    string u = "";
+    string unit = "";
     string path = "";
-    string f = "";
+    string fit = "";
     bool error = false;
     for(string token:tokens){
         string tk = token.substr(0, token.find("=")); // -f=b
         token.erase(0,tk.length()+1); // b
         if(scan.compare(tk, "f")){
-            if(f.empty()){
-                f = token; // f = b
+            if(fit.empty()){
+                fit = token; // f = b
             }else{
                 scan.errores("MKDISK", "El parametro F ya fue ingresado en el comando"+tk);
             }
@@ -40,9 +41,9 @@ void Disk::mkdisk(vector<string> tokens){
             }
         }else if (scan.compare(tk, "u"))
         {
-            if (u.empty())
+            if (unit.empty())
             {
-                u = token;
+                unit = token;
             }else{
                 scan.errores("MKDISK","parametro U repetido en el comando"+tk);
             }
@@ -67,13 +68,13 @@ void Disk::mkdisk(vector<string> tokens){
         return;
     }
 
-    if (f.empty())
+    if (fit.empty())
     {
-        f = "BF";
+        fit = "BF";
     }
-    if (u.empty())
+    if (unit.empty())
     {
-        u = "M";
+        unit = "M";
     }
 
     if (path.empty() && size.empty())
@@ -84,14 +85,14 @@ void Disk::mkdisk(vector<string> tokens){
     }else if (size.empty())
     {
         scan.errores("MKDISK","se requiere parametro Size para este comando");
-    }else if (!scan.compare(f,"BF") && !scan.compare(f,"FF") && !scan.compare(f,"WF"))
+    }else if (!scan.compare(fit,"BF") && !scan.compare(fit,"FF") && !scan.compare(fit,"WF"))
     {
         scan.errores("MKDISK","valores de parametro F no esperados");
-    }else if (!scan.compare(u,"k") && !scan.compare(u,"m"))
+    }else if (!scan.compare(unit,"k") && !scan.compare(unit,"m"))
     {
         scan.errores("MKDISK","valores de parametro U no esperados");
     }else{
-        makeDisk(size,f,u,path);
+        makeDisk(size,fit,unit,path);
     }  
 }
 
@@ -335,4 +336,67 @@ void Disk::fdisk_delete(vector<string> context){
 
 void Disk::generatepartition(string s, string u, string p, string t, string f, string n, string a){
 
+}
+
+Structs::Partition Disk::findby(Structs::MBR mbr, string name, string path) {
+    Structs::Partition partitions[4];
+    partitions[0] = mbr.mbr_Partition_1;
+    partitions[1] = mbr.mbr_Partition_2;
+    partitions[2] = mbr.mbr_Partition_3;
+    partitions[3] = mbr.mbr_Partition_4;
+
+    bool ext = false;
+    Structs::Partition extended;
+    for (auto &partition : partitions) {
+        if (partition.part_status == '1') {
+            if (scan.compare(partition.part_name, name)) {
+                return partition;
+            } else if (partition.part_type == 'E') {
+                ext = true;
+                extended = partition;
+            }
+        }
+    }
+    if (ext) {
+        vector<Structs::EBR> ebrs = getlogics(extended, path);
+        for (Structs::EBR ebr : ebrs) {
+            if (ebr.part_status == '1') {
+                if (scan.compare(ebr.part_name, name)) {
+                    Structs::Partition tmp;
+                    tmp.part_status = '1';
+                    tmp.part_type = 'L';
+                    tmp.part_fit = ebr.part_fit;
+                    tmp.part_start = ebr.part_start;
+                    tmp.part_size = ebr.part_size;
+                    strcpy(tmp.part_name, ebr.part_name);
+                    return tmp;
+                }
+            }
+        }
+    }
+    throw runtime_error("la partición no existe");
+}
+
+
+vector<Structs::EBR> Disk::getlogics(Structs::Partition partition, string p) {
+    vector<Structs::EBR> ebrs;
+
+    FILE *file = fopen(p.c_str(), "rb+");
+    rewind(file);
+    Structs::EBR tmp;
+    fseek(file, partition.part_start, SEEK_SET);
+    fread(&tmp, sizeof(Structs::EBR), 1, file);
+    do {
+        if (!(tmp.part_status == '0' && tmp.part_next == -1)) {
+            if (tmp.part_status != '0') {
+                ebrs.push_back(tmp);
+            }
+            fseek(file, tmp.part_next, SEEK_SET);
+            fread(&tmp, sizeof(Structs::EBR), 1, file);
+        } else {
+            fclose(file);
+            break;
+        }
+    } while (true);
+    return ebrs;
 }

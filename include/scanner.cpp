@@ -261,13 +261,18 @@ void scanner::exec(string path){
     while(getline(input_file,line)){
         lines.push_back(line);
     }
-    for(const auto &instruc:lines){
-        string texto = instruc;
+    for(const auto &line:lines){
+        string texto = line;
         string comand = token(texto);
         if(texto!=""){
+            if (texto.substr(0, 1) == "#")
+            {
+                cout << "Comentario: " << texto << endl;
+            }else{
             texto.erase(0,comand.length()+1);
             vector <string> parameters = split_tokens(texto);
             functions(comand,parameters);
+            }
         }
     }
     input_file.close();
