@@ -19,25 +19,26 @@ void Mount::do_mount(vector<string> parameters) {
     string name;
 
     for (auto current : parameters) {
-        string id = shared.lowerString(current.substr(0, current.find('=')));
-        current.erase(0, id.length() + 1);
+        string parameter = shared.lowerString(current.substr(0, current.find('=')));
+        current.erase(0, parameter.length() + 1);
         if (current.substr(0, 1) == "\"") {
             current = current.substr(1, current.length() - 2);
         }
 
-        if (shared.compare(id, "name")) {
-            if (count(required.begin(), required.end(), id)) {
-                auto itr = find(required.begin(), required.end(), id);
+        if (shared.compare(parameter, "name")) {
+            if (count(required.begin(), required.end(), parameter)) {
+                auto itr = find(required.begin(), required.end(), parameter);
                 required.erase(itr);
                 name = current;
             }
-        } else if (shared.compare(id, "path")) {
-            if (count(required.begin(), required.end(), id)) {
-                auto itr = find(required.begin(), required.end(), id);
+        } else if (shared.compare(parameter, "path")) {
+            if (count(required.begin(), required.end(), parameter)) {
+                auto itr = find(required.begin(), required.end(), parameter);
                 required.erase(itr);
                 path = current;
             }
         }
+        //cout << "Parametro: " << current << endl;
     }
     if (required.size() != 0) {
         shared.handler("MOUNT", "requiere ciertos parámetros obligatorios");
@@ -57,19 +58,22 @@ void Mount::mountPartition(string path, string name) {
         rewind(validate);
         fread(&disk, sizeof(Structs::MBR), 1, validate);
         fclose(validate);
+        //listMounts();
 
-        Structs::Partition partition = dsk.findby(disk, name, path);
+        cout << "Buscando montaje mediante el path "  << endl;
+        Structs::Partition partition = fdisk.findPartitionby(disk, name, path);
+
         if (partition.part_type == 'E') {
-            vector<Structs::EBR> ebrs = dsk.getlogics(partition, path);
+            vector<Structs::EBR> ebrs = fdisk.getlogics(partition, path);
             if (!ebrs.empty()) {
                 Structs::EBR ebr = ebrs.at(0);
                 name = ebr.part_name;
-                //shared.handler("", "se montará una partición lógica");
+                shared.handler("", "se montará una partición lógica");
             } else {
                 throw runtime_error("no se puede montar una extendida");
             }
         }
-
+        cout << "Buscando montaje con el mismo path "  << endl;
         for (int i = 0; i < 99; i++) {
             if (mountedDiscs[i].path == path) {
                 for (int j = 0; j < 26; j++) {
@@ -78,12 +82,13 @@ void Mount::mountPartition(string path, string name) {
                         mountedDiscs[i].mpartitions[j].letter = alfabeto.at(j);
                         strcpy(mountedDiscs[i].mpartitions[j].name, name.c_str());
                         string re = to_string(i + 1) + alfabeto.at(j);
-                        //shared.response("MOUNT", "se ha realizado correctamente el mount -id=38" + re);
+                        shared.handler("MOUNT", "se ha realizado correctamente el mount -id=38" + re);
                         return;
                     }
                 }
             }
         }
+        cout << "Buscando espacio libre para montar particion"  << endl;
         for (int i = 0; i < 99; i++) {
             if (mountedDiscs[i].status == '0') {
                 mountedDiscs[i].status = '1';
@@ -94,7 +99,7 @@ void Mount::mountPartition(string path, string name) {
                         mountedDiscs[i].mpartitions[j].letter = alfabeto.at(j);
                         strcpy(mountedDiscs[i].mpartitions[j].name, name.c_str());
                         string re = to_string(i + 1) + alfabeto.at(j);
-                        //shared.response("MOUNT", "se ha realizado correctamente el mount -id=38" + re);
+                        shared.handler("MOUNT", "se ha realizado correctamente el mount -id=38" + re);
                         return;
                     }
                 }
@@ -102,6 +107,7 @@ void Mount::mountPartition(string path, string name) {
         }
     }
     catch (exception &e) {
+        cout << "Ha ocurrido un error"  << endl;
         shared.handler("MOUNT", e.what());
         return;
     }
@@ -132,7 +138,7 @@ Structs::Partition Mount::getmount(string id, string *path) {
                 fread(&disk, sizeof(Structs::MBR), 1, validate);
                 fclose(validate);
                 *path = mountedDiscs[i].path;
-                return dsk.findby(disk, mountedDiscs[i].mpartitions[j].name, mountedDiscs[i].path);
+                return fdisk.findPartitionby(disk, mountedDiscs[i].mpartitions[j].name, mountedDiscs[i].path);
             }
         }
     }
@@ -198,7 +204,7 @@ void Mount::unmountPartition(string id) {
     }
 }
 
-void Mount::listmounts() {
+void Mount::listMounts() {
     cout << "\n Listados de Mounts:"
          << endl;
     for (int i = 0; i < 99; i++) {

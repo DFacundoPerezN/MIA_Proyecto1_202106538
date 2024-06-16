@@ -1,0 +1,10 @@
+#exec -path=entrada.txt
+mkdisk -s=20 -u=m -path=/home/Disco1.dsk
+fdisk -s=300 -path=/home/Disco1.dsk -name=Particion1
+fdisk -t=E -path=/home/Disco1.dsk -u=K -name=Particion3 -s=30 -f=Ff
+fdisk -t=L -path=/home/Disco1.dsk -u=K -name=Particion6 -s=13 -f=Bf
+mount -path=/home/Disco1.dsk  -name=Particion1
+
+
+rmdisk -path=/home/Disco1.dsk
+#exit

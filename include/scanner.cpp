@@ -1,5 +1,8 @@
 #include "../libraries/scanner.h"
 #include "../libraries/disk.h"
+#include "../libraries/scanner.h"
+#include "../libraries/mount.h"
+#include "../libraries/structs.h"
 
 #include <iostream>
 #include <stdlib.h>
@@ -13,6 +16,8 @@
 using namespace std;
 
 Disk disco;
+Mount mounter;
+
 scanner::scanner()
 {
 }
@@ -193,17 +198,22 @@ void scanner::functions(string comand, vector<string> parameters){
 
     }else if(compare(comand, "RMDISK")){    //rmdisk -path=/home/hola.dsk
         cout << "\n Eliminando disco..." << endl;
-
         disco.rmdisk(parameters);
+
     }else if(compare(comand, "FDISK")){
         cout << "\n Creando particion..." << endl;
+        disco.fdisk(parameters);
+
     }else if(compare(comand, "MOUNT")){
         cout << "\n Montando particion..." << endl;
+        mounter.do_mount(parameters);
+
     }else if(compare(comand, "UNMOUNT")){
         cout << "\n Desmontando particion..." << endl;
 
     }else if(compare(comand, "REP")){
         cout << "\n Generando reporte..." << endl;
+
     }else if(compare(comand, "EXEC")){
         cout << "\n Ejecutando script..." << endl;
         funcion_exec(parameters);
