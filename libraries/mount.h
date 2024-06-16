@@ -27,17 +27,17 @@ class Mount {
         MountedPartition mpartitions[26];
     }MountedDisc;
 
-    MountedDisc mounted[99];
+    MountedDisc mountedDiscs[99];
 
-    //void mount(vector<string> context);
+    void do_mount(vector<string> context);
 
-    //void unmount(vector<string> context);
+    void do_unmount(vector<string> context);
 
-    //void mount(string p, string n);
+    void mountPartition(string p, string n);
 
-    //void unmount(string id);
+    void unmountPartition(string id);
 
-    //void listmount();
+    void listmounts();
 
     Structs::Partition getmount(string id, string *p);
 

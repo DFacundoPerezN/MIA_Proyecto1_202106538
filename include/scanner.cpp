@@ -161,6 +161,22 @@ bool scanner::compare(string a, string b){
     return upperString(a) == upperString(b);
 }
 
+bool scanner::confirm(string mensaje){
+    while(true){
+        cout << mensaje << " (S/N): ";
+        string respuesta;
+        getline(cin,respuesta);
+        if (compare(respuesta,"s"))
+        {
+            return true;
+        }else if (compare(respuesta,"n"))
+        {
+            return false;
+        }
+        cout << "Respuesta no valida, intente de nuevo" << endl;
+    }
+}
+
 void scanner::errores(string operacion, string mensaje){    
     cout << "\033[1;41m Error\033"<< "\033[0;31m(" + operacion + ")~~> \033[0m"<< mensaje << endl;
 }

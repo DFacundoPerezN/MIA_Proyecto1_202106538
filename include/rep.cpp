@@ -58,12 +58,15 @@ void Reporter::do_report(vector<string> context){
     if (scan.compare(name, "MBR")) {
         report_mbr(path, id);
     }
+    else if(scan.compare(name, "DISK")){
+        //report_disk(path, id);
+    }
     else{
         scan.handler("REPORT", "El reporte solicitado no existe");
     }
 }
 
-void Reporter::report_mbr(string pathREPORT, string id) {
+void Reporter::report_mbr(string pathReport, string id) {
     try {
         string pathMBR;
         Structs::Partition partition = mount.getmount(id, &pathMBR);
@@ -78,7 +81,7 @@ void Reporter::report_mbr(string pathREPORT, string id) {
         fread(&disco, sizeof(Structs::MBR), 1, file);
         fclose(file);
 
-        string pd = pathREPORT.substr(0, pathREPORT.find('.'));
+        string pd = pathReport.substr(0, pathReport.find('.'));
         pd += ".dot";
         FILE *doc = fopen(pd.c_str(), "r");
         if (doc == NULL) {
@@ -89,7 +92,36 @@ void Reporter::report_mbr(string pathREPORT, string id) {
         } else {
             fclose(doc);
         }
-        } catch (exception &e) {
+        }
+    catch (exception &e) {
         scan.handler("REPORT", e.what());
     }
+}
+string Reporter::dotMBR(Structs::MBR mbr){
+
+    string dot = "digraph G {\n rankdir=TB;\n";
+
+
+    return dot;
+}
+
+string Reporter::dotPartition(Structs::Partition partition){
+    
+    string dot = "";
+
+
+    return dot;
+}
+
+string Reporter::getPath(string id) {
+    string path;
+    for (auto &mountedDisc : mount.mountedDiscs) {
+        for (auto &mountedPartition : mountedDisc.mpartitions) {
+            if (mountedPartition.status == '1' && mountedPartition.letter == id[0]) {
+                path = mountedDisc.path;
+                return path;
+            }
+        }
+    }
+    return path;
 }

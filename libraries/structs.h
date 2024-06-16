@@ -24,8 +24,8 @@ public:
 
     typedef struct _MBR 
     {
-        int mbr_tamano; // 4 bytes
-        time_t mbr_fecha_creacion; // 24 bytes
+        int mbr_size; // 4 bytes
+        time_t mbr_date_creacion; // 24 bytes
         int mbr_disk_signature; // 4 bytes
         char disk_fit; // 1 byte
         Partition mbr_Partition_1; //{status, type, fit, start, size, name} // 27 bytes

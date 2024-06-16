@@ -20,6 +20,9 @@ class Reporter{
         Reporter();
         void do_report(vector<string> context/*, Mount m*/);
         void report_mbr(string path, string id);
+        string getPath(string id);
+        string dotMBR(Structs::MBR mbr);
+        string dotPartition(Structs::Partition partition);
 };
 
 
