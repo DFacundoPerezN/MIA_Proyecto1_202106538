@@ -27,6 +27,6 @@ class scanner{
         void exec(string path);
         bool confirm(string mensaje);
 };
-
+        
 
 #endif

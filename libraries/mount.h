@@ -11,41 +11,42 @@ using namespace std;
 
 class Mount {
     public:
-    Mount();
+        Mount();
 
-    typedef struct _MP
-    {
-        char letter;
-        char status = '0';
-        char name[20];
-    }MountedPartition;
+        typedef struct _MP
+        {
+            string diskName;
+            char status = '0';
+            char name[20];
+        }MountedPartition;
 
-    typedef struct _MD
-    {
-        char path[150];
-        char status = '0';
-        MountedPartition mpartitions[26];
-    }MountedDisc;
+        typedef struct _MD
+        {
+            char path[150];
+            char status = '0';
+            MountedPartition mpartitions[26];
+        }MountedDisc;
 
-    MountedDisc mountedDiscs[99];
+        MountedDisc mountedDiscs[99];
 
-    void do_mount(vector<string> context);
+        string DiskNameFromPath(string path);
 
-    void do_unmount(vector<string> context);
+        void do_mount(vector<string> context);
 
-    void mountPartition(string p, string n);
+        void do_unmount(vector<string> context);
 
-    void unmountPartition(string id);
+        void mountPartition(string p, string n);
 
-    void listMounts();
+        void unmountPartition(string id);
 
-    Structs::Partition getmount(string id, string *p);
+        void listMounts();
+        string getDiskName(string path);
+        Structs::Partition getmount(string id, string *p);
 
     private:
-    Disk dsk;
-    FDisk fdisk;
-    scanner shared;
-    vector<char> alfabeto = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
-                             's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+        Disk dsk;
+        FDisk fdisk;
+        scanner shared;
+    
 };
 #endif

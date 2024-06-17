@@ -1,4 +1,5 @@
 #include "../libraries/scanner.h"
+#include "../libraries/rep.h"
 #include "../libraries/disk.h"
 #include "../libraries/scanner.h"
 #include "../libraries/mount.h"
@@ -17,6 +18,7 @@ using namespace std;
 
 Disk disco;
 Mount mounter;
+Reporter reporter;
 
 scanner::scanner()
 {
@@ -213,6 +215,7 @@ void scanner::functions(string comand, vector<string> parameters){
 
     }else if(compare(comand, "REP")){
         cout << "\n Generando reporte..." << endl;
+        reporter.do_report(parameters);
 
     }else if(compare(comand, "EXEC")){
         cout << "\n Ejecutando script..." << endl;

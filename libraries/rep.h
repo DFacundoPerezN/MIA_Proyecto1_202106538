@@ -12,17 +12,19 @@ using namespace std;
 
 class Reporter{
     private:
+        FDisk fdisco;
         Disk disco;
         scanner scan;
-        Mount mount;
 
     public:
         Reporter();
         void do_report(vector<string> context/*, Mount m*/);
         void report_mbr(string path, string id);
         string getPath(string id);
-        string dotMBR(Structs::MBR mbr);
-        string dotPartition(Structs::Partition partition);
+        string dotMBR(Structs::MBR mbr, string path);
+        string dotPartition(Structs::Partition partition, string path);
+        string dotLogicPartition(Structs::EBR extended);
+        //Mount mount;
 };
 
 
