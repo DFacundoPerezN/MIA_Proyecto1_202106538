@@ -1,0 +1,18 @@
+# exec -path=try.txt
+mkdisk -s=20 -u=m -path=/home/Disco1.dsk
+
+fdisk -s=300 -path=/home/Disco1.dsk -name=Particion1
+fdisk -s=30 -path=/home/Disco1.dsk -name=Particion2
+fdisk -s=3 -path=/home/Disco1.dsk -name=Particion3
+fdisk -t=E -path=/home/Disco1.dsk -u=K -name=Particion4 -s=300 -f=Ff
+fdisk -t=L -path=/home/Disco1.dsk -u=K -name=Particion6 -s=13 -f=Bf
+
+mount -path=/home/Disco1.dsk  -name=Particion1
+mount -path=/home/Disco1.dsk  -name=Particion3
+mount -path=/home/Disco1.dsk  -name=Particion2
+
+rep -id=381Disco1 -Path=/home/reportes/reporte1.jpg -name=mbr
+rep -id=381Disco1 -Path=/home/reportes/reporte0.jpg -name=disk
+
+rmdisk -path=/home/Disco1.dsk
+#exit

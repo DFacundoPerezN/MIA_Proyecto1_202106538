@@ -1,10 +1,29 @@
 #exec -path=entrada.txt
-mkdisk -s=20 -u=m -path=/home/Disco1.dsk
-fdisk -s=300 -path=/home/Disco1.dsk -name=Particion1
-fdisk -t=E -path=/home/Disco1.dsk -u=K -name=Particion3 -s=30 -f=Ff
-fdisk -t=L -path=/home/Disco1.dsk -u=K -name=Particion6 -s=13 -f=Bf
-mount -path=/home/Disco1.dsk  -name=Particion1
-rep -id=381Disco1 -Path=/home/reportes/reporte1.jpg -name=mbr
+#CREACION DE DISCOS
+mkdisk -s=20 -u=m -path=/home/archivos/Discos/Disco1.dsk
+Mkdisk -u=k -s=51200 -path=/home/archivos/Disco2.dsk -f=BF
+mkdisk -s=10 -path=/home/archivos/Discos/Disco3.dsk
+mkdisk -s=51200 -path="/home/archivos/Discos/mis archivos/Disco4.dsk" -u=K
+mkdisk -s=20 -path="/home/archivos/Discos/mis archivos/Disco5.dsk" -u=M -f=WF
+#Deberia dar error
+mkdisk -param=x -s=30 -path=/home/archivos/archivos/fase1/Disco.dsk
 
-rmdisk -path=/home/Disco1.dsk
-#exit
+#ELIMINACION DE DISCOS
+#El primero deberia dar error
+rmdisk -path=/home/archivos/Disco3.dsk
+rmdisk -path=/home/archivos/Discos/Disco3.dsk
+RMdisk -path="/home/archivos/Discos/mis archivos/Disco4.dsk"
+
+#CREACION DE PARTICION
+fdisk -t=P -u=K -name=Part1 -s=7680 -path=/home/archivos/Discos/Disco1.dsk -f=BF
+#MOUNT
+mount -path=/home/archivos/Discos/Disco1.dsk -name=Part1 
+#581a
+#CREACION DE SISTEMA DE ARCHIVOS
+
+#------------------------REPORTES 1----------------
+#rep -id=581a -path="/home/archivos/reportes/reporte1_sb.jpg" -name=sb
+#rep -id=581a -path="/home/archivos/reportes/reporte1_tree.jpg" -name=tree
+#pause
+
+#LOGIN

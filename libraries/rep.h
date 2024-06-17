@@ -25,7 +25,8 @@ class Reporter{
         string dotPartition(Structs::Partition partition, string path);
         string dotLogicPartition(Structs::EBR extended);
         //Mount mount;
+        void report_disk(string pathReport, string id);
+        string dotDisk(string pathReport);
 };
-
 
 #endif

@@ -6,6 +6,7 @@
 #include <locale>
 
 using namespace std;
+int codigoLetter = 97;
 
 Mount::Mount(){}
 
@@ -102,7 +103,8 @@ void Mount::mountPartition(string pathMBR, string name) {
             if (mountedDiscs[i].path == pathMBR) {
                 for (int j = 0; j < 26; j++) {
                     if (Mount::mountedDiscs[i].mpartitions[j].status == '0') {
-
+                        mountedDiscs[i].mpartitions[j].letter == codigoLetter + j;
+                        codigoLetter++;
                         mountedDiscs[i].mpartitions[j].status = '1';
                         mountedDiscs[i].mpartitions[j].diskName = DiskNameFromPath(pathMBR);
                         strcpy(mountedDiscs[i].mpartitions[j].name, name.c_str());
@@ -224,7 +226,7 @@ void Mount:: do_unmount(vector<string> context) {
 
 void Mount::unmountPartition(string id) {
     try {
-        if (!(id[0] == '6' && id[1] == '5')) {
+        if (!(id[0] == '3' && id[1] == '8')) {
             throw runtime_error("el primer identificador no es válido");
         }
         string past = id;

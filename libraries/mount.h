@@ -12,12 +12,14 @@ using namespace std;
 class Mount {
     public:
         Mount();
+        int codigoLetter = 97;
 
         typedef struct _MP
         {
             string diskName;
             char status = '0';
             char name[20];
+            char letter;
         }MountedPartition;
 
         typedef struct _MD
