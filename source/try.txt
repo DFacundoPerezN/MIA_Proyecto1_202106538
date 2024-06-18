@@ -5,7 +5,9 @@ fdisk -s=300 -path=/home/Disco1.dsk -name=Particion1
 fdisk -s=30 -path=/home/Disco1.dsk -name=Particion2
 fdisk -s=3 -path=/home/Disco1.dsk -name=Particion3
 fdisk -t=E -path=/home/Disco1.dsk -u=K -name=Particion4 -s=300 -f=Ff
-fdisk -t=L -path=/home/Disco1.dsk -u=b -name=Particion6 -s=13000 -f=Bf
+#Logicas
+fdisk -t=L -path=/home/Disco1.dsk -u=b -name=Particion5 -s=13000 -f=Bf
+fdisk -t=l -path=/home/Disco1.dsk -u=K -name=Particion6 -s=30 -f=bf
 
 mount -path=/home/Disco1.dsk  -name=Particion1
 mount -path=/home/Disco1.dsk  -name=Particion3

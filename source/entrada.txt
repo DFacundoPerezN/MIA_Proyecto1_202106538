@@ -18,12 +18,15 @@ RMdisk -path="/home/archivos/Discos/mis archivos/Disco4.dsk"
 fdisk -t=P -u=K -name=Part1 -s=7680 -path=/home/archivos/Discos/Disco1.dsk -f=BF
 #MOUNT
 mount -path=/home/archivos/Discos/Disco1.dsk -name=Part1 
-#581a
+#681a
+pause
 #CREACION DE SISTEMA DE ARCHIVOS
-
 #------------------------REPORTES 1----------------
-#rep -id=581a -path="/home/archivos/reportes/reporte1_sb.jpg" -name=sb
-#rep -id=581a -path="/home/archivos/reportes/reporte1_tree.jpg" -name=tree
-#pause
+rep -id=381a -path="/home/archivos/reportes/reporte1_sb.jpg" -name=disk
+rep -id=381a -path="/home/archivos/reportes/reporte1_tree.jpg" -name=mbr
+
+rmdisk -path="/home/archivos/Discos/mis archivos/Disco5.dsk"
+RMdisk -path=/home/archivos/Disco2.dsk 
+rmdisk -path=/home/archivos/Discos/Disco1.dsk
 
 #LOGIN

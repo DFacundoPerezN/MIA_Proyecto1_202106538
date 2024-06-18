@@ -108,9 +108,8 @@ void Reporter::report_mbr(string pathReport, string id) {
     catch (exception &e) {
         scan.handler("REPORT", e.what());
     }
-
-
 }
+
 string Reporter::dotMBR(Structs::MBR disco, string path){
 
     struct tm *tm;
@@ -145,7 +144,7 @@ string Reporter::dotMBR(Structs::MBR disco, string path){
 
 string Reporter::dotPartition(Structs::Partition partition, string path){
     string dot = " ";
-    string status = to_string(partition.part_status);
+    string status = to_string(partition.part_status-48);
     cout << "Particion de tipo: " << partition.part_type << endl;
 
     if(partition.part_status == '1'){
@@ -173,6 +172,7 @@ string Reporter::dotPartition(Structs::Partition partition, string path){
             cout << "Se encontró una particion extendida" << endl;
             vector<Structs::EBR> ebrs = fdisco.getlogicPartitions(partition, path);
             for(Structs::EBR extended : ebrs){
+                cout << "Se encontró una particion logica dentro de la extendida :0" << endl;
                 dot += dotLogicPartition(extended);
             }
         }
@@ -182,7 +182,7 @@ string Reporter::dotPartition(Structs::Partition partition, string path){
 }
 
 string Reporter:: dotLogicPartition(Structs::EBR extended){
-    string status = to_string(extended.part_status);
+    string status = to_string(extended.part_status-48);
 
     string dot = "\t\t\t"
                 "<tr><td colspan='2' bgcolor='violetred1'><font color='gold'>Particion Logica</font></td></tr>"
