@@ -36,7 +36,7 @@ class Disk{
 
         //void logic(Structs::Partition partition, Structs::Partition ep, string p);
 
-        //vector<Structs::EBR> getlogics(Structs::Partition partition, string p);
+        //vector<Structs::EBR> getlogicPartitions(Structs::Partition partition, string p);
         
     // private:
     //     Shared shared;   

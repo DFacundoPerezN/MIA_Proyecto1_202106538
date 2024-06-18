@@ -171,7 +171,7 @@ string Reporter::dotPartition(Structs::Partition partition, string path){
 
         if(partition.part_type == 'E'){
             cout << "Se encontró una particion extendida" << endl;
-            vector<Structs::EBR> ebrs = fdisco.getlogics(partition, path);
+            vector<Structs::EBR> ebrs = fdisco.getlogicPartitions(partition, path);
             for(Structs::EBR extended : ebrs){
                 dot += dotLogicPartition(extended);
             }

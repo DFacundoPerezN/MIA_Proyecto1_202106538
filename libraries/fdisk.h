@@ -32,7 +32,7 @@ class FDisk{
         Structs::MBR adjust(Structs::MBR mbr, Structs::Partition p, vector<Transition> t, vector<Structs::Partition> ps, int u);
         Structs::Partition findPartitionby(Structs::MBR mbr, string name, string path);
         void logic(Structs::Partition partition, Structs::Partition ep, string p);
-        vector<Structs::EBR> getlogics(Structs::Partition partition, string p);
+        vector<Structs::EBR> getlogicPartitions(Structs::Partition partition, string p);
     
     private:
         scanner scan;

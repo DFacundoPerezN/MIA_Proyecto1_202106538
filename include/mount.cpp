@@ -88,7 +88,7 @@ void Mount::mountPartition(string pathMBR, string name) {
         Structs::Partition partition = fdisk.findPartitionby(disk, name, pathMBR);
 
         if (partition.part_type == 'E') {
-            vector<Structs::EBR> ebrs = fdisk.getlogics(partition, pathMBR);
+            vector<Structs::EBR> ebrs = fdisk.getlogicPartitions(partition, pathMBR);
             if (!ebrs.empty()) {
                 Structs::EBR ebr = ebrs.at(0);
                 name = ebr.part_name;
