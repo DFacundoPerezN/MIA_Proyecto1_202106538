@@ -16,7 +16,7 @@ class Mount {
 
         typedef struct _MP
         {
-            string diskName;
+            //string diskName;
             char status = '0';
             char name[20];
             char letter;

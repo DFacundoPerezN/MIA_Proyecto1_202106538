@@ -215,10 +215,12 @@ string Reporter:: dotLogicPartition(Structs::EBR extended){
 }
 
 string Reporter::getPath(string id) {
+    char letter = id[id.length() - 1];
     string path;
     for (auto &mountedDisc : mounter.mountedDiscs) {
         for (auto &mountedPartition : mountedDisc.mpartitions) {
-            if (mountedPartition.status == '1' && mountedPartition.diskName == mounter.getDiskName(id)) {
+            //if (mountedPartition.status == '1' && mountedPartition.diskName == mounter.getDiskName(id)) {
+            if (mountedPartition.status == '1' && mountedPartition.letter == letter) {
                 path = mountedDisc.path;
                 return path;
             }
@@ -289,28 +291,28 @@ string Reporter::dotDisk(string pathMBR){
         }
     }
     
-    string content="digraph G{\n"
-                  "node [shape = plaintext];\n";
-        content += "nodo1 [nodo1 [fontcolor=darkslateblue color=aquamarine3 fontname=Arial\n"
-            "label = <<table>\n";
-        content += "<tr>\n";
+    string content="digraph DISCO{\n"
+                    "\tnode [shape = plaintext];\n";
+        content +=  "\tnodo1 [fontcolor=darkslateblue color=aquamarine3 fontname=Arial\n"
+                    "\tlabel = <<table>\n";
+        content +=  "\t\t<tr>\n";
 
         int positions[5] = {0, 0, 0, 0, 0};
-        int positionsii[5] = {0, 0, 0, 0, 0};
+        int positions2[5] = {0, 0, 0, 0, 0};
         positions[0] = disco.mbr_Partition_1.part_start - (1 + sizeof(Structs::MBR));
         positions[1] = disco.mbr_Partition_2.part_start - (disco.mbr_Partition_1.part_start + disco.mbr_Partition_1.part_size);
         positions[2] = disco.mbr_Partition_3.part_start - (disco.mbr_Partition_2.part_start + disco.mbr_Partition_2.part_size);
         positions[3] = disco.mbr_Partition_4.part_start - (disco.mbr_Partition_3.part_start + disco.mbr_Partition_3.part_size);
         positions[4] = disco.mbr_size + 1 - (disco.mbr_Partition_4.part_start + disco.mbr_Partition_4.part_size);
 
-        copy(positions, positionsii, positionsii);
+        copy(positions, positions2, positions2);
         for (size_t j = 0; j < 5; j++) {
             bool negative = false;
             for (size_t i = 0; i < 4; i++) {
                 if (positions[i] < 0) {
                     negative = true;
                 }
-                if (positions[i] <= 0 && positionsii[i] <= 0 && negative && positions[i + 1] > 0) {
+                if (positions[i] <= 0 && positions2[i] <= 0 && negative && positions[i + 1] > 0) {
                     positions[i] = positions[i] + positions[i + 1];
                     positions[i + 1] = 0;
                 }
@@ -321,7 +323,7 @@ string Reporter::dotDisk(string pathMBR){
         int logic = 0;
         string tmplogic;
         if (ext) {
-            tmplogic = "<tr>\n";
+            tmplogic = "\t\t<tr>\n";
             Structs::EBR aux;
             FILE *ext = fopen(pathMBR.c_str(), "r+b");
             fseek(ext, extended.part_start, SEEK_SET);
@@ -330,14 +332,14 @@ string Reporter::dotDisk(string pathMBR){
             while (aux.part_next != -1) {
                 float res = (float) aux.part_size / (float) disco.mbr_size;
                 res = round(res * 10000.00F) / 100.00F;
-                tmplogic += "<td>EBR</td>";
-                tmplogic += "<td>Logica\n" + to_string(res) + "% del disco</td>\n";
+                tmplogic += "\t\t\t<td>EBR</td>\n";
+                tmplogic += "\t\t\t<td>Logica" + to_string(res) + "% del disco</td>\n";
                 float resta = (float) aux.part_next - ((float) aux.part_start + (float) aux.part_size);
                 resta = resta / disco.mbr_size;
                 resta = resta * 10000.00F;
                 resta = round(resta) / 100.00F;
                 if (resta != 0) {
-                    tmplogic += "<td>Logica\n" + to_string(resta) + "% libre del disco</td>\n";
+                    tmplogic += "\t\t\t<td>Logica" + to_string(resta) + "% libre del disco</td>\n";
                     logic++;
                 }
                 logic += 2;
@@ -348,33 +350,33 @@ string Reporter::dotDisk(string pathMBR){
             }
             float res = (float) aux.part_size / (float) disco.mbr_size;
             res = round(res * 10000.00F) / 100.00F;
-            tmplogic += "<td>EBR</td>";
-            tmplogic += "<td>Logica\n" + to_string(res) + "% del disco</td>\n";
+            tmplogic += "\t\t\t<td>EBR</td>\n";
+            tmplogic += "\t\t\t<td>Logica" + to_string(res) + "% del disco</td>\n";
             float resta = (float) extended.part_size -
                           ((float) aux.part_start + (float) aux.part_size - (float) extended.part_start);
             resta = resta / disco.mbr_size;
             resta = resta * 10000.00F;
             resta = round(resta) / 100.00F;
             if (resta != 0) {
-                tmplogic += "<td>Libre\n" + to_string(resta) + "% del disco</td>\n";
+                tmplogic += "\t\t\t<td>Libre" + to_string(resta) + "% del disco</td>\n";
                 logic++;
             }
-            tmplogic += "</tr>\n\n";
+            tmplogic += "\t\t</tr>\n\n";
             logic += 2;
         }
 
         for (int i = 0; i < 4; ++i) {
             if (partitions[i].part_type == 'E') {
-                content += "<td COLSPAN='" + to_string(logic) + "'> Extendida </td>\n";
+                content += "\t\t\t<td COLSPAN='" + to_string(logic) + "'> Extendida </td>\n";
             } else {
                 if (positions[i] != 0) {
                     float res = (float) positions[i] / (float) disco.mbr_size;
                     res = round(res * 100.0F * 100.0F) / 100.0F;
-                    content += "<td ROWSPAN='2'> Libre \n" + to_string(res) + "% del disco</td>";
+                    content += "\t\t\t<td ROWSPAN='2'> Libre " + to_string(res) + "% del disco</td>\n";
                 } else {
                     float res = ((float) partitions[i].part_size) / (float) disco.mbr_size;
                     res = round(res * 10000.00F) / 100.00F;
-                    content += "<td ROWSPAN='2'> Primaria \n" + to_string(res) + "% del disco</td>";
+                    content += "\t\t\t<td ROWSPAN='2'> Primaria " + to_string(res) + "% del disco</td>\n";
                 }
             }
 
@@ -382,13 +384,13 @@ string Reporter::dotDisk(string pathMBR){
         if (positions[4] != 0) {
             float res = (float) positions[4] / (float) disco.mbr_size;
             res = round(res * 100.0F * 100.0F) / 100.0F;
-            content += "<td ROWSPAN='2'> Libre \n" + to_string(res) + "% del disco</td>";
+            content += "\t\t\t<td ROWSPAN='2'> Libre " + to_string(res) + "% del disco</td>\n";
         }
 
-        content += "</tr>\n\n";
+        content += "\t\t</tr>\n\n";
         content += tmplogic;
 
-        content += "</table>>];\n}\n";
+        content += "\t</table>>];\n}\n";
 
     return content;
 }   

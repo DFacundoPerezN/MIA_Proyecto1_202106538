@@ -6,7 +6,7 @@
 #include <locale>
 
 using namespace std;
-int codigoLetter = 97;
+char codigoLetter = 97;
 
 Mount::Mount(){}
 
@@ -103,13 +103,14 @@ void Mount::mountPartition(string pathMBR, string name) {
             if (mountedDiscs[i].path == pathMBR) {
                 for (int j = 0; j < 26; j++) {
                     if (Mount::mountedDiscs[i].mpartitions[j].status == '0') {
-                        mountedDiscs[i].mpartitions[j].letter == codigoLetter + j;
-                        codigoLetter++;
+                        mountedDiscs[i].mpartitions[j].letter = (codigoLetter + j);
+                        //codigoLetter++;
                         mountedDiscs[i].mpartitions[j].status = '1';
-                        mountedDiscs[i].mpartitions[j].diskName = DiskNameFromPath(pathMBR);
+                        //mountedDiscs[i].mpartitions[j].diskName = DiskNameFromPath(pathMBR);
                         strcpy(mountedDiscs[i].mpartitions[j].name, name.c_str());
-                        string id_MD = "38" + to_string(i + 1) + mountedDiscs[i].mpartitions[j].diskName;
-                        shared.respuesta("MOUNT", "se ha realizado correctamente el mount -id=" + id_MD+
+                        //string id_MD = "38" + to_string(i + 1) + mountedDiscs[i].mpartitions[j].diskName;
+                        string id_MD = "38" + to_string(i + 1) + mountedDiscs[i].mpartitions[j].letter;
+                        shared.respuesta("MOUNT", "se ha realizado correctamente el mount -id=" + id_MD+ " letra="+mountedDiscs[i].mpartitions[j].letter+
                         " -path="+pathMBR+" -name="+name+ " en mountedDiscs["+to_string(i)+"].mpartitions["+to_string(j)+"]");
                         listMounts();
                         return;
@@ -125,10 +126,13 @@ void Mount::mountPartition(string pathMBR, string name) {
                 for (int j = 0; j < 26; j++) {
                     if (Mount::mountedDiscs[i].mpartitions[j].status == '0') {
                         
+                        mountedDiscs[i].mpartitions[j].letter = (codigoLetter + j);
+                        //codigoLetter++;
                         mountedDiscs[i].mpartitions[j].status = '1';
-                        mountedDiscs[i].mpartitions[j].diskName = DiskNameFromPath(pathMBR);
+                        //mountedDiscs[i].mpartitions[j].diskName = DiskNameFromPath(pathMBR);
                         strcpy(mountedDiscs[i].mpartitions[j].name, name.c_str());
-                        string id_MD = "38" + to_string(i + 1) + mountedDiscs[i].mpartitions[j].diskName;
+                        //string id_MD = "38" + to_string(i + 1) + mountedDiscs[i].mpartitions[j].diskName;
+                        string id_MD = "38" + to_string(i + 1) + mountedDiscs[i].mpartitions[j].letter;
                         shared.respuesta("MOUNT", "se ha realizado correctamente el mount -id=" + id_MD+
                         " -path="+pathMBR+" status="+mountedDiscs[i].mpartitions[j].status+ " en mountedDiscs["+to_string(i)+"].mpartitions["+to_string(j)+"]");
                         listMounts();
@@ -167,7 +171,7 @@ string Mount:: getDiskName(string ID){  //381Disco1
 
 Structs::Partition Mount::getmount(string id, string *path) {
     listMounts();
-
+    char letter = id[id.length() - 1];
     string past = id;
     string diskName = getDiskName(id);
     id.erase(0, 2);
@@ -183,8 +187,8 @@ Structs::Partition Mount::getmount(string id, string *path) {
         //cout << "Comparando " << mountedDiscs[i].mpartitions[j].status << " con 1" << endl;
         if (mountedDiscs[i].mpartitions[j].status == '1') {
             //cout << "Comparando " << mountedDiscs[i].mpartitions[j].diskName << " con " << diskName << endl;
-            if (mountedDiscs[i].mpartitions[j].diskName == diskName) {
-
+            //if (mountedDiscs[i].mpartitions[j].diskName == diskName) {
+            if (mountedDiscs[i].mpartitions[j].letter == letter) {
                 FILE *validate = fopen(mountedDiscs[i].path, "r");
                 if (validate == NULL) {
                     throw runtime_error("disco no existente");
@@ -230,7 +234,7 @@ void Mount::unmountPartition(string id) {
             throw runtime_error("el primer identificador no es válido");
         }
         string past = id;
-
+        char letter = id[id.length() - 1];
         string Diskname = getDiskName(id);
         id.erase(0, 2);
 
@@ -242,8 +246,8 @@ void Mount::unmountPartition(string id) {
 
         for (int j = 0; j < 26; j++) {
             if (mountedDiscs[i].mpartitions[j].status == '1') {
-                if (mountedDiscs[i].mpartitions[j].diskName == Diskname) {
-
+                //if (mountedDiscs[i].mpartitions[j].diskName == diskName) {
+                if (mountedDiscs[i].mpartitions[j].letter == letter) {
                     MountedPartition mp = MountedPartition();
                     mountedDiscs[i].mpartitions[j] = mp;
                     shared.respuesta("UNMOUNT", "se ha realizado correctamente el unmount -id=" + past);
@@ -269,7 +273,7 @@ void Mount::listMounts() {
     for (int i = 0; i < 99; i++) {
         for (int j = 0; j < 26; j++) {
             if (mountedDiscs[i].mpartitions[j].status == '1') {
-                cout << "-- 38" << i + 1 << mountedDiscs[i].mpartitions[j].diskName << ", " << mountedDiscs[i].mpartitions[j].name << endl;
+                cout << "-- 38" << i + 1 << mountedDiscs[i].mpartitions[j].letter << ", " << mountedDiscs[i].mpartitions[j].name << endl;
             }
         }
     }
